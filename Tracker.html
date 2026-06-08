@@ -1,10 +1,26 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="uk">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Моно-Финансы: Командный Центр</title>
+    <title>Mono-Finances: Mobile Command Center</title>
+
+    <!-- PWA Headers & Mobile Capabilities -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Mono-Finances">
+    <meta name="theme-color" content="#0b0f19">
+    <link rel="apple-touch-icon" href="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=180&h=180&fit=crop&q=80">
+
+    <!-- Google Fonts: Plus Jakarta Sans for Premium Fintech Vibe -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Chart.js Library -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
     <style>
         :root {
             --bg-main: #0b0f19;
@@ -17,37 +33,43 @@
             --success: #10b981;
             --warning: #f59e0b;
             --danger: #ef4444;
-            --border: #1e293b;
+            --border: rgba(255, 255, 255, 0.08);
+            --shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+            --card-glow: 0 8px 32px 0 rgba(59, 130, 246, 0.05);
         }
 
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: 'Segoe UI', -apple-system, Roboto, sans-serif;
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
             -webkit-tap-highlight-color: transparent;
         }
 
         body {
             background-color: var(--bg-main);
+            background-image: radial-gradient(circle at 50% 0%, #152038 0%, var(--bg-main) 70%);
             color: var(--text-main);
-            padding: 12px;
+            padding: 16px;
             font-size: 16px;
-            /* Оптимально для мобильных, предотвращает зум инпутов */
+            line-height: 1.5;
+            min-height: 100vh;
         }
 
         .container {
-            max-width: 1250px;
+            max-width: 1280px;
             margin: 0 auto;
+            padding-bottom: 40px;
         }
 
+        /* Top Header Navigation */
         header {
             display: flex;
             flex-direction: column;
-            gap: 10px;
-            border-bottom: 2px solid var(--border);
-            padding-bottom: 12px;
-            margin-bottom: 15px;
+            gap: 12px;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 16px;
+            margin-bottom: 24px;
         }
 
         @media (min-width: 768px) {
@@ -59,257 +81,697 @@
         }
 
         .logo-area h1 {
-            font-size: 1.3rem;
-            font-weight: bold;
-            letter-spacing: 0.5px;
+            font-size: 1.5rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .logo-area h1 span {
+            color: var(--accent-pink);
+            text-shadow: 0 0 10px rgba(255, 75, 130, 0.4);
         }
 
         .logo-area p {
             color: var(--text-muted);
-            font-size: 0.8rem;
+            font-size: 0.85rem;
+            font-weight: 500;
             margin-top: 2px;
         }
 
-        .status-area {
-            font-size: 0.8rem;
-            background: var(--bg-card);
-            padding: 8px 12px;
-            border-radius: 6px;
-            border: 1px solid var(--border);
+        .header-badges {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
         }
 
-        .grid {
+        .status-badge {
+            font-size: 0.8rem;
+            font-weight: 600;
+            background: rgba(19, 28, 46, 0.8);
+            border: 1px solid var(--border);
+            padding: 8px 14px;
+            border-radius: 20px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: var(--shadow);
+        }
+
+        .badge-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        /* 2-Column Responsive Dashboard Layout */
+        .dashboard-grid {
             display: grid;
             grid-template-columns: 1fr;
-            gap: 15px;
+            gap: 24px;
         }
 
-        @media (min-width: 900px) {
-            .grid {
-                grid-template-columns: 4fr 3fr;
+        @media (min-width: 992px) {
+            .dashboard-grid {
+                grid-template-columns: 1.2fr 0.8fr;
             }
-
-            .full-row {
+            .span-full-width {
                 grid-column: span 2;
             }
         }
 
+        /* Premium Glassmorphic Cards */
         .card {
-            background-color: var(--bg-card);
+            background: rgba(19, 28, 46, 0.6);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
             border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 16px;
+            border-radius: 20px;
+            padding: 24px;
+            box-shadow: var(--shadow), var(--card-glow);
+            transition: border-color 0.3s, box-shadow 0.3s;
         }
 
-        h2 {
-            font-size: 1rem;
+        .card:hover {
+            border-color: rgba(59, 130, 246, 0.2);
+            box-shadow: var(--shadow), 0 10px 40px rgba(59, 130, 246, 0.08);
+        }
+
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 700;
             text-transform: uppercase;
-            margin-bottom: 12px;
-            border-left: 3px solid var(--accent-pink);
-            padding-left: 8px;
             letter-spacing: 0.5px;
-        }
-
-        /* Кнопки оптимизированы под тапы пальцем */
-        .btn-group {
+            margin-bottom: 20px;
+            border-left: 4px solid var(--accent-pink);
+            padding-left: 10px;
             display: flex;
-            gap: 8px;
-            margin-bottom: 12px;
-            flex-wrap: wrap;
-        }
-
-        button {
-            flex: 1 1 auto;
-            background-color: var(--bg-input);
-            color: var(--text-main);
-            border: 1px solid var(--border);
-            padding: 12px 14px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: bold;
-            font-size: 0.9rem;
-            min-height: 44px;
-            display: inline-flex;
+            justify-content: space-between;
             align-items: center;
-            justify-content: center;
-            transition: background-color 0.2s;
         }
 
-        button.active {
-            background-color: var(--accent-blue);
-            border-color: var(--accent-blue);
-        }
-
-        button.bonus-btn {
-            border-color: #6b21a8;
-            color: #d8b4fe;
-        }
-
-        button.bonus-btn.active {
-            background-color: #7c3aed;
-            color: white;
-        }
-
+        /* Form Controls & Ergonomics */
         .form-group {
-            margin-bottom: 12px;
+            margin-bottom: 20px;
         }
 
         label {
             display: block;
             font-size: 0.75rem;
+            font-weight: 700;
             color: var(--text-muted);
-            margin-bottom: 4px;
+            margin-bottom: 8px;
             text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
         }
 
         input[type="number"] {
             width: 100%;
             background-color: var(--bg-input);
             border: 1px solid var(--border);
-            color: white;
-            padding: 12px;
-            border-radius: 8px;
-            font-size: 1rem;
-            font-weight: bold;
-            min-height: 44px;
+            color: var(--text-main);
+            padding: 14px 16px;
+            padding-right: 40px;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            min-height: 48px;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
         }
 
-        .info-block {
+        input[type="number"]:focus {
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+        }
+
+        /* Prevent numeric spinners styling */
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        .input-currency-symbol {
+            position: absolute;
+            right: 16px;
+            font-weight: 700;
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            pointer-events: none;
+        }
+
+        /* Preset Option Buttons */
+        .btn-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        @media (min-width: 480px) {
+            .btn-grid {
+                grid-template-columns: 1fr 1fr auto;
+            }
+        }
+
+        button.btn {
             background-color: var(--bg-input);
-            border-left: 3px solid var(--danger);
-            padding: 12px;
-            margin-top: 12px;
-            border-radius: 6px;
+            color: var(--text-main);
+            border: 1px solid var(--border);
+            padding: 12px 18px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 0.95rem;
+            min-height: 48px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.2s ease-in-out;
         }
 
-        /* Чекбоксы в виде крупных плиток */
+        button.btn:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+            border-color: rgba(255, 255, 255, 0.15);
+        }
+
+        button.btn.active {
+            background-color: var(--accent-blue);
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 15px rgba(59, 130, 246, 0.4);
+        }
+
+        button.btn-bonus {
+            grid-column: span 2;
+            border-color: rgba(168, 85, 247, 0.4);
+            color: #d8b4fe;
+            background: rgba(168, 85, 247, 0.05);
+        }
+
+        @media (min-width: 480px) {
+            button.btn-bonus {
+                grid-column: span 1;
+            }
+        }
+
+        button.btn-bonus.active {
+            background-color: #7c3aed;
+            border-color: #7c3aed;
+            color: #ffffff;
+            box-shadow: 0 0 15px rgba(124, 58, 237, 0.4);
+        }
+
+        /* Sub-Info Panels */
+        .info-panel {
+            background-color: var(--bg-input);
+            border: 1px solid var(--border);
+            border-left: 4px solid var(--warning);
+            padding: 16px;
+            border-radius: 12px;
+            margin-top: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .info-panel-left h4 {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .info-panel-left p {
+            font-size: 1.25rem;
+            font-weight: 800;
+            color: var(--text-main);
+            margin-top: 4px;
+        }
+
+        .info-panel-right {
+            text-align: right;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            line-height: 1.4;
+        }
+
+        /* Tactical Checkbox Tiles */
+        .checkbox-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
         .checkbox-tile {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 16px;
             background-color: var(--bg-input);
             border: 1px solid var(--border);
-            padding: 12px;
-            border-radius: 8px;
-            margin-bottom: 8px;
-            min-height: 55px;
-        }
-
-        .checkbox-tile input[type="checkbox"] {
-            width: 22px;
-            height: 22px;
+            padding: 16px;
+            border-radius: 14px;
             cursor: pointer;
-            flex-shrink: 0;
+            min-height: 58px;
+            user-select: none;
+            transition: all 0.2s ease;
         }
 
-        /* Адаптивность таблицы для узких экранов */
+        .checkbox-tile:hover {
+            border-color: rgba(255, 255, 255, 0.15);
+            background-color: rgba(255, 255, 255, 0.02);
+        }
+
+        .checkbox-tile.checked {
+            border-color: rgba(59, 130, 246, 0.3);
+            background-color: rgba(59, 130, 246, 0.04);
+        }
+
+        .checkbox-tile.disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+
+        /* Custom Checkbox Design */
+        .checkbox-control {
+            position: relative;
+            width: 24px;
+            height: 24px;
+            border: 2px solid var(--text-muted);
+            border-radius: 6px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            transition: all 0.2s ease;
+        }
+
+        .checkbox-tile.checked .checkbox-control {
+            border-color: var(--accent-blue);
+            background-color: var(--accent-blue);
+        }
+
+        .checkbox-control::after {
+            content: '';
+            width: 10px;
+            height: 6px;
+            border-left: 2px solid white;
+            border-bottom: 2px solid white;
+            transform: rotate(-45deg) translate(1px, -1px);
+            opacity: 0;
+            transition: opacity 0.1s ease;
+        }
+
+        .checkbox-tile.checked .checkbox-control::after {
+            opacity: 1;
+        }
+
+        .checkbox-content {
+            flex-grow: 1;
+        }
+
+        .checkbox-label {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .checkbox-desc {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        .checkbox-cost {
+            font-size: 1rem;
+            font-weight: 800;
+            color: var(--accent-pink);
+        }
+
+        /* Pulsing Deficit Alert Box */
+        .alert-box {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid var(--danger);
+            color: #fca5a5;
+            padding: 16px;
+            border-radius: 14px;
+            margin-bottom: 20px;
+            display: none;
+            align-items: flex-start;
+            gap: 12px;
+            animation: pulseAlert 2.5s infinite ease-in-out;
+        }
+
+        @keyframes pulseAlert {
+            0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.35); }
+            50% { box-shadow: 0 0 0 8px rgba(239, 68, 68, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+        }
+
+        .alert-icon {
+            font-size: 1.25rem;
+            color: var(--danger);
+            line-height: 1;
+        }
+
+        .alert-text h4 {
+            font-size: 0.9rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            margin-bottom: 2px;
+        }
+
+        .alert-text p {
+            font-size: 0.8rem;
+            line-height: 1.4;
+        }
+
+        /* Ledger Table Section */
         .table-responsive {
             width: 100%;
             overflow-x: auto;
             -webkit-overflow-scrolling: touch;
-            margin-top: 5px;
-            border-radius: 8px;
             border: 1px solid var(--border);
+            border-radius: 14px;
+            background-color: var(--bg-input);
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
             min-width: 600px;
-            /* Гарантирует читаемость данных без сжатия */
         }
 
-        th,
-        td {
-            padding: 12px 10px;
+        th, td {
+            padding: 14px 16px;
             text-align: left;
-            font-size: 0.85rem;
+            font-size: 0.9rem;
             border-bottom: 1px solid var(--border);
         }
 
         th {
+            background-color: rgba(255, 255, 255, 0.02);
             color: var(--text-muted);
+            font-size: 0.75rem;
+            font-weight: 700;
             text-transform: uppercase;
-            font-size: 0.7rem;
-            background-color: var(--bg-input);
+            letter-spacing: 0.5px;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr.row-highlight {
+            background-color: rgba(255, 255, 255, 0.015);
+            font-weight: 700;
         }
 
         .text-right {
             text-align: right;
         }
 
-        .status-badge {
+        .table-account-badge {
             font-size: 0.65rem;
-            padding: 2px 6px;
-            border-radius: 4px;
-            font-weight: bold;
+            font-weight: 800;
+            padding: 3px 8px;
+            border-radius: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-right: 8px;
+            display: inline-block;
+            vertical-align: middle;
         }
 
-        .badge-bank {
-            background-color: #1e1b4b;
-            color: #818cf8;
+        .badge-type-bank {
+            background: rgba(59, 130, 246, 0.15);
+            color: #93c5fd;
+            border: 1px solid rgba(59, 130, 246, 0.2);
         }
 
-        .badge-card {
-            background-color: #1c1917;
-            color: #d6d3d1;
+        .badge-type-card {
+            background: rgba(241, 245, 249, 0.1);
+            color: #cbd5e1;
+            border: 1px solid rgba(241, 245, 249, 0.15);
         }
 
-        .slider-container {
-            margin-bottom: 12px;
+        .ledger-outflow {
+            color: var(--danger);
+            font-weight: 600;
         }
 
-        .slider-header {
-            display: flex;
-            justify-content: space-between;
-            font-size: 0.8rem;
-            margin-bottom: 4px;
+        .ledger-inflow {
+            color: var(--success);
+            font-weight: 600;
         }
 
-        input[type="range"] {
-            width: 100%;
-            height: 8px;
-            border-radius: 4px;
-            background: var(--bg-input);
-            accent-color: var(--accent-blue);
-            min-height: 30px;
-            /* Чтобы легче было зацепить ползунок */
+        .ledger-final {
+            font-weight: 700;
         }
 
-        .output-box {
-            background-color: var(--bg-input);
-            border-left: 3px solid var(--success);
-            padding: 12px;
-            font-size: 0.8rem;
-            line-height: 1.5;
-            border-radius: 0 6px 6px 0;
-        }
-
-        .error-message {
-            background-color: rgba(239, 64, 64, 0.15);
-            border: 1px solid var(--danger);
-            color: #fca5a5;
-            padding: 12px;
-            border-radius: 8px;
-            margin-bottom: 12px;
-            font-size: 0.8rem;
-            display: none;
-        }
-
-        .footer-metrics {
-            margin-top: 12px;
-            font-size: 0.75rem;
-            color: var(--text-muted);
+        .ledger-footer-metrics {
             display: flex;
             flex-direction: column;
-            gap: 6px;
+            gap: 12px;
+            margin-top: 16px;
+            padding: 14px 16px;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 12px;
+            border: 1px solid var(--border);
         }
 
         @media (min-width: 600px) {
-            .footer-metrics {
+            .ledger-footer-metrics {
                 flex-direction: row;
                 justify-content: space-between;
+                align-items: center;
             }
+        }
+
+        .footer-metric-label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+
+        .footer-metric-value {
+            color: var(--text-main);
+            font-weight: 700;
+        }
+
+        .footer-free-cash {
+            font-size: 1rem;
+            font-weight: 800;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* Donut Chart Responsive Sizing */
+        .chart-container {
+            position: relative;
+            margin: auto;
+            height: 250px;
+            width: 100%;
+        }
+
+        /* Capital Modeler & Sliders */
+        .slider-control-group {
+            margin-bottom: 20px;
+        }
+
+        .slider-meta {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .slider-name {
+            color: var(--text-main);
+        }
+
+        .slider-percentage {
+            font-family: monospace;
+            font-size: 0.95rem;
+        }
+
+        .slider-track-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+            min-height: 44px; /* Touch target */
+        }
+
+        /* Customized Sleek Sliders */
+        input[type="range"] {
+            -webkit-appearance: none;
+            width: 100%;
+            background: transparent;
+            outline: none;
+        }
+
+        input[type="range"]::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 6px;
+            cursor: pointer;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            height: 20px;
+            width: 20px;
+            border-radius: 50%;
+            cursor: pointer;
+            -webkit-appearance: none;
+            margin-top: -7px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            transition: transform 0.1s, background-color 0.2s;
+        }
+
+        input[type="range"]::-webkit-slider-thumb:hover {
+            transform: scale(1.25);
+        }
+
+        /* Colored thumbs matching category aesthetics */
+        #sl-ovgz::-webkit-slider-thumb {
+            background-color: var(--accent-blue);
+            box-shadow: 0 0 12px rgba(59, 130, 246, 0.6);
+        }
+        #sl-usd::-webkit-slider-thumb {
+            background-color: var(--success);
+            box-shadow: 0 0 12px rgba(16, 185, 129, 0.6);
+        }
+        #sl-crypto::-webkit-slider-thumb {
+            background-color: var(--accent-pink);
+            box-shadow: 0 0 12px rgba(255, 75, 130, 0.6);
+        }
+
+        /* Instruction Output Box */
+        .instruction-box {
+            background-color: var(--bg-input);
+            border: 1px solid var(--border);
+            border-left: 4px solid var(--success);
+            border-radius: 12px;
+            padding: 16px;
+            margin-top: 20px;
+        }
+
+        .instruction-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .instruction-header h4 {
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--success);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-copy {
+            background: none;
+            border: none;
+            color: var(--accent-blue);
+            font-size: 0.75rem;
+            font-weight: 700;
+            cursor: pointer;
+            padding: 4px 8px;
+            border-radius: 4px;
+            transition: background 0.2s;
+            min-height: auto;
+        }
+
+        .btn-copy:hover {
+            background: rgba(59, 130, 246, 0.15);
+        }
+
+        .instruction-body {
+            font-size: 0.85rem;
+            line-height: 1.6;
+            color: var(--text-main);
+            font-family: monospace;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+
+        /* Payday Checklist Layout */
+        .payday-check-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .payday-tile {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: none;
+            border: none;
+            padding: 0;
+            min-height: auto;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .payday-control {
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--text-muted);
+            border-radius: 5px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            transition: all 0.2s ease;
+        }
+
+        .payday-tile.checked .payday-control {
+            border-color: var(--success);
+            background-color: var(--success);
+        }
+
+        .payday-control::after {
+            content: '';
+            width: 8px;
+            height: 5px;
+            border-left: 2px solid white;
+            border-bottom: 2px solid white;
+            transform: rotate(-45deg) translate(0.5px, -0.5px);
+            opacity: 0;
+            transition: opacity 0.1s ease;
+        }
+
+        .payday-tile.checked .payday-control::after {
+            opacity: 1;
+        }
+
+        .payday-label {
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--text-main);
+            transition: color 0.2s;
+        }
+
+        .payday-tile.checked .payday-label {
+            color: var(--text-muted);
+            text-decoration: line-through;
         }
     </style>
 </head>
@@ -317,382 +779,893 @@
 <body>
 
     <div class="container">
+        <!-- Top Command Header -->
         <header>
             <div class="logo-area">
-                <h1>МОНО-ФИНАНСЫ // <span style="color: var(--accent-pink);">МЕЦ</span></h1>
-                <p>Мобильный Симуляционный Центр</p>
+                <h1>MONO-FINANCES // <span>МЕЦ</span></h1>
+                <p>Мобільний Симуляційний Центр • Android-First UI</p>
             </div>
-            <div class="status-area">
-                <div>БАЗА: ЧЕРНИГОВСКАЯ ОБЛ.</div>
-                <div style="color: var(--success); margin-top: 2px; font-weight: bold;">РЕЗЕРВ НЗ: 50 000 ₴</div>
+            <div class="header-badges">
+                <div class="status-badge" id="nbu-rate-badge">
+                    <span class="badge-dot" id="rate-status-dot" style="background-color: var(--warning); box-shadow: 0 0 8px var(--warning);"></span>
+                    <span id="rate-status-text">Завантаження курсу USD...</span>
+                </div>
+                <div class="status-badge">
+                    <span class="badge-dot" style="background-color: var(--success); box-shadow: 0 0 8px var(--success);"></span>
+                    <span>Резерв НЗ: 50,000.00 ₴</span>
+                </div>
             </div>
         </header>
 
-        <div class="grid">
-            <div class="card">
-                <h2>1. Входящее обеспечение (ГЗ)</h2>
-                <label>Фиксированные пресеты:</label>
-                <div class="btn-group">
-                    <button id="p-26500" class="active" onclick="applyPreset(26500)">26.5к ₴</button>
-                    <button id="p-36500" onclick="applyPreset(36500)">36.5к ₴</button>
-                    <button id="p-bonus" class="bonus-btn" onclick="toggleBonus()">+50к Бонус</button>
+        <!-- Deficit Cash Crunch Alert -->
+        <div class="alert-box" id="deficit-alert">
+            <div class="alert-icon">⚠️</div>
+            <div class="alert-text">
+                <h4>Касовий розрив / Дефіцит коштів</h4>
+                <p>Баланс карти опустився нижче обов'язкового резерву кредитів та життєзабезпечення (13,752.33 ₴). Додаткові симуляційні витрати заблоковані. Відключіть активні покупки для відновлення стабільності.</p>
+            </div>
+        </div>
+
+        <div class="dashboard-grid">
+            <!-- Left Column: Settings and Table -->
+            <div style="display: flex; flex-direction: column; gap: 24px;">
+                
+                <!-- 1. Income Allocation Engine -->
+                <div class="card">
+                    <div class="card-title">
+                        1. Розподіл вхідного забезпечення
+                    </div>
+                    <label>Швидкі фінансові пресети:</label>
+                    <div class="btn-grid">
+                        <button class="btn" id="btn-preset-26500" onclick="applyIncomePreset(26500)">
+                            26.5к ₴
+                        </button>
+                        <button class="btn" id="btn-preset-36500" onclick="applyIncomePreset(36500)">
+                            36.5к ₴
+                        </button>
+                        <button class="btn btn-bonus" id="btn-bonus-toggle" onclick="toggleBonusOverride()">
+                            ⚡ +50к ₴ Бонус
+                        </button>
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label for="input-manual-income">Сума зачислення вручну (₴):</label>
+                        <div class="input-wrapper">
+                            <input type="number" id="input-manual-income" placeholder="Введіть суму" oninput="handleManualIncomeChange(this.value)">
+                            <span class="input-currency-symbol">₴</span>
+                        </div>
+                    </div>
+
+                    <div class="info-panel">
+                        <div class="info-panel-left">
+                            <h4>Компенсація кредитів</h4>
+                            <p>11,102.33 ₴</p>
+                        </div>
+                        <div class="info-panel-right">
+                            "Кібернетики": 9,999.83 ₴<br>
+                            ФОП Панченко Ю. В.: 1,102.50 ₴
+                        </div>
+                    </div>
                 </div>
 
-                <div class="form-group">
-                    <label>Сумма зачисления (₴):</label>
-                    <input type="number" id="main-income" value="26500" oninput="processFinance()">
+                <!-- 2. Ledger and Balances Table -->
+                <div class="card">
+                    <div class="card-title">
+                        2. Баланси та розподіл коштів
+                    </div>
+                    <div class="table-responsive">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Рахунок зберігання</th>
+                                    <th class="text-right">Стартовий</th>
+                                    <th class="text-right">Витрати</th>
+                                    <th class="text-right">Вливання</th>
+                                    <th class="text-right">Фінальний</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <span class="table-account-badge badge-type-bank">Банка</span>
+                                        Подушка безпеки (НЗ)
+                                    </td>
+                                    <td class="text-right">50,000.00 ₴</td>
+                                    <td class="text-right ledger-outflow" id="ledger-out-podushka">0.00 ₴</td>
+                                    <td class="text-right ledger-inflow" id="ledger-in-podushka">+0.00 ₴</td>
+                                    <td class="text-right ledger-final" id="ledger-fin-podushka">50,000.00 ₴</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <span class="table-account-badge badge-type-bank">Банка</span>
+                                        Капітал та інвестиції
+                                    </td>
+                                    <td class="text-right">23,798.00 ₴</td>
+                                    <td class="text-right ledger-outflow" id="ledger-out-capital">0.00 ₴</td>
+                                    <td class="text-right ledger-inflow" id="ledger-in-capital">+0.00 ₴</td>
+                                    <td class="text-right ledger-final" id="ledger-fin-capital">23,798.00 ₴</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <span class="table-account-badge badge-type-bank">Банка</span>
+                                        Техніка та здоров'я
+                                    </td>
+                                    <td class="text-right">5,000.00 ₴</td>
+                                    <td class="text-right ledger-outflow" id="ledger-out-tech">0.00 ₴</td>
+                                    <td class="text-right ledger-inflow" id="ledger-in-tech">+0.00 ₴</td>
+                                    <td class="text-right ledger-final" id="ledger-fin-tech">5,000.00 ₴</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <span class="table-account-badge badge-type-bank">Банка</span>
+                                        Досуг та ігри (Steam)
+                                    </td>
+                                    <td class="text-right">5,000.00 ₴</td>
+                                    <td class="text-right ledger-outflow" id="ledger-out-steam">0.00 ₴</td>
+                                    <td class="text-right ledger-inflow" id="ledger-in-steam">+0.00 ₴</td>
+                                    <td class="text-right ledger-final" id="ledger-fin-steam">5,000.00 ₴</td>
+                                </tr>
+                                <tr class="row-highlight">
+                                    <td>
+                                        <span class="table-account-badge badge-type-card">Карта</span>
+                                        Чорна Карта моно
+                                    </td>
+                                    <td class="text-right">13,709.53 ₴</td>
+                                    <td class="text-right ledger-outflow" id="ledger-out-card">0.00 ₴</td>
+                                    <td class="text-right ledger-inflow" id="ledger-in-card">+0.00 ₴</td>
+                                    <td class="text-right ledger-final" id="ledger-fin-card" style="color: var(--success);">13,709.53 ₴</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="ledger-footer-metrics">
+                        <div class="footer-metric-label">
+                            Цільовий буфер карти: <span class="footer-metric-value">13,752.33 ₴</span> (Кредити + База 2.65к)
+                        </div>
+                        <div class="footer-free-cash" id="footer-free-cash-container">
+                            Вільний кеш: <span id="ledger-free-cash-val">0.00 ₴</span>
+                        </div>
+                    </div>
                 </div>
 
-                <div class="info-block">
-                    <div style="font-weight: bold; font-size: 0.75rem; color: #fca5a5;">КОМПЕНСАЦИЯ РАССРОЧЕК:</div>
-                    <div style="font-size: 1.2rem; font-weight: bold; margin-top: 2px;">11 102.33 ₴</div>
-                    <div style="font-size: 0.7rem; color: var(--text-muted);">Автосписание: 14 и 19 числа</div>
-                </div>
             </div>
 
-            <div class="card">
-                <h2>2. Оперативные закупки месяца</h2>
-                <label>Утилизация накопленных целевых банок:</label>
+            <!-- Right Column: Simulators, Investment Modeler & Viz -->
+            <div style="display: flex; flex-direction: column; gap: 24px;">
 
-                <div class="checkbox-tile">
-                    <input type="checkbox" id="item-shoes" checked onchange="processFinance()">
-                    <div style="flex-grow: 1;">
-                        <div style="font-size: 0.85rem; font-weight: bold;">Обувь (Размер в размер)</div>
-                        <div style="font-size: 0.7rem; color: var(--text-muted);">Избавит от сырости</div>
+                <!-- 3. Real-Time Asset Distribution Visualization -->
+                <div class="card">
+                    <div class="card-title">
+                        Візуалізація активів
                     </div>
-                    <div style="font-weight: bold; font-size: 0.9rem;">3 500 ₴</div>
-                </div>
-
-                <div class="checkbox-tile">
-                    <input type="checkbox" id="item-gamepad" checked onchange="processFinance()">
-                    <div style="flex-grow: 1;">
-                        <div style="font-size: 0.85rem; font-weight: bold;">Геймпад Xbox Series</div>
-                        <div style="font-size: 0.7rem; color: var(--text-muted);">Сессии на коленях / без стола</div>
+                    <div class="chart-container">
+                        <canvas id="assetChart"></canvas>
                     </div>
-                    <div style="font-weight: bold; font-size: 0.9rem;">2 700 ₴</div>
                 </div>
 
-                <div class="checkbox-tile">
-                    <input type="checkbox" id="item-bag" checked onchange="processFinance()">
-                    <div style="flex-grow: 1;">
-                        <div style="font-size: 0.85rem; font-weight: bold;">Сумка Født i stormen</div>
-                        <div style="font-size: 0.7rem; color: var(--text-muted);">Разгрузка / Городской цикл</div>
+                <!-- 4. Tactical Expense Simulator -->
+                <div class="card">
+                    <div class="card-title">
+                        3. Тактичний симулятор витрат
                     </div>
-                    <div style="font-weight: bold; font-size: 0.9rem;">3 000 ₴</div>
-                </div>
-            </div>
+                    <div class="checkbox-list">
+                        <!-- Sneakers -->
+                        <div class="checkbox-tile" id="tile-shoes" onclick="toggleExpenseCheckbox('shoes')">
+                            <div class="checkbox-control"></div>
+                            <div class="checkbox-content">
+                                <div class="checkbox-label">New Sneakers</div>
+                                <div class="checkbox-desc">Списання строго з банки "Техніка та здоров'я"</div>
+                            </div>
+                            <div class="checkbox-cost">3,500 ₴</div>
+                        </div>
 
-            <div class="card full-row">
-                <h2>3. Ведомость распределения и балансы</h2>
-                <div id="err-log" class="error-message"></div>
+                        <!-- Gamepad -->
+                        <div class="checkbox-tile" id="tile-gamepad" onclick="toggleExpenseCheckbox('gamepad')">
+                            <div class="checkbox-control"></div>
+                            <div class="checkbox-content">
+                                <div class="checkbox-label">Xbox Series Gamepad</div>
+                                <div class="checkbox-desc">Списання строго з банки "Досуг та ігри (Steam)"</div>
+                            </div>
+                            <div class="checkbox-cost">2,700 ₴</div>
+                        </div>
 
-                <div class="table-responsive">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Счет хранения</th>
-                                <th>Старт</th>
-                                <th>Расход</th>
-                                <th>Вливание</th>
-                                <th class="text-right">Итог</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td><span class="status-badge badge-bank">БАНКА</span> Подушка (НЗ)</td>
-                                <td>50 000.00 ₴</td>
-                                <td>0.00 ₴</td>
-                                <td>+0.00 ₴</td>
-                                <td class="text-right" id="res-podushka" style="font-weight: bold;">50 000.00 ₴</td>
-                            </tr>
-                            <tr>
-                                <td><span class="status-badge badge-bank">БАНКА</span> Капитал</td>
-                                <td>23 798.00 ₴</td>
-                                <td>0.00 ₴</td>
-                                <td id="flow-capital">+0.00 ₴</td>
-                                <td class="text-right" id="res-capital" style="font-weight: bold;">23 798.00 ₴</td>
-                            </tr>
-                            <tr>
-                                <td><span class="status-badge badge-bank">БАНКА</span> Техника</td>
-                                <td>5 000.00 ₴</td>
-                                <td id="out-tech" style="color: var(--danger);">0.00 ₴</td>
-                                <td id="flow-tech">+0.00 ₴</td>
-                                <td class="text-right" id="res-tech" style="font-weight: bold;">5 000.00 ₴</td>
-                            </tr>
-                            <tr>
-                                <td><span class="status-badge badge-bank">БАНКА</span> Досуг / Steam</td>
-                                <td>5 000.00 ₴</td>
-                                <td id="out-games" style="color: var(--danger);">0.00 ₴</td>
-                                <td id="flow-games">+0.00 ₴</td>
-                                <td class="text-right" id="res-games" style="font-weight: bold;">5 000.00 ₴</td>
-                            </tr>
-                            <tr style="background-color: rgba(255,255,255,0.02); font-weight: bold;">
-                                <td><span class="status-badge badge-card">КАРТА</span> Черная (Белая)</td>
-                                <td>13 709.53 ₴</td>
-                                <td id="out-card" style="color: var(--danger);">0.00 ₴</td>
-                                <td id="flow-card">+0.00 ₴</td>
-                                <td class="text-right" id="res-card" style="color: var(--success);">13 709.53 ₴</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-
-                <div class="footer-metrics">
-                    <span id="label-reserve">Буфер кредитов: 11 102.33 ₴ | База: 2 650.00 ₴</span>
-                    <span id="label-free" style="color: var(--success); font-weight: bold;">Свободный кэш: 0.00 ₴</span>
-                </div>
-            </div>
-
-            <div class="card">
-                <h2>4. Диверсификация фонда «Капитал»</h2>
-
-                <div class="slider-container">
-                    <div class="slider-header">
-                        <span>ОВГЗ (Гривна, 15.3%):</span>
-                        <span id="p-ovgz-txt" style="font-weight: bold;">50%</span>
+                        <!-- Født i stormen Bag -->
+                        <div class="checkbox-tile" id="tile-bag" onclick="toggleExpenseCheckbox('bag')">
+                            <div class="checkbox-control"></div>
+                            <div class="checkbox-content">
+                                <div class="checkbox-label">Сумка Født i stormen</div>
+                                <div class="checkbox-desc">Каскадне списання: Steam Банка до 0 ₴ → дефіцит на Чорну Карту</div>
+                            </div>
+                            <div class="checkbox-cost">3,000 ₴</div>
+                        </div>
                     </div>
-                    <input type="range" id="sl-ovgz" min="0" max="100" value="50" oninput="rebalanceSliders('ovgz')">
                 </div>
 
-                <div class="slider-container">
-                    <div class="slider-header">
-                        <span>Доллар (USD в Моно):</span>
-                        <span id="p-usd-txt" style="font-weight: bold;">35%</span>
+                <!-- 5. Capital Investment Diversification Modeler -->
+                <div class="card">
+                    <div class="card-title">
+                        4. Диверсифікація «Капіталу»
                     </div>
-                    <input type="range" id="sl-usd" min="0" max="100" value="35" oninput="rebalanceSliders('usd')">
-                </div>
-
-                <div class="slider-container">
-                    <div class="slider-header">
-                        <span>Крипта Spot:</span>
-                        <span id="p-crypto-txt" style="font-weight: bold;">15%</span>
+                    
+                    <div class="slider-control-group">
+                        <div class="slider-meta">
+                            <span class="slider-name">ОВДП (Держ. облігації UAH, 15.3%):</span>
+                            <span class="slider-percentage" id="txt-sl-ovgz" style="color: var(--accent-blue);">50%</span>
+                        </div>
+                        <div class="slider-track-wrapper">
+                            <input type="range" id="sl-ovgz" min="0" max="100" value="50" oninput="adjustInvestmentSliders('ovgz')">
+                        </div>
                     </div>
-                    <input type="range" id="sl-crypto" min="0" max="100" value="15"
-                        oninput="rebalanceSliders('crypto')">
-                </div>
 
-                <div class="output-box">
-                    <div style="font-weight: bold; margin-bottom: 4px; color: var(--success);">Инструкция для закупки:
+                    <div class="slider-control-group">
+                        <div class="slider-meta">
+                            <span class="slider-name">Валютна позиція (USD покупка в Моно):</span>
+                            <span class="slider-percentage" id="txt-sl-usd" style="color: var(--success);">35%</span>
+                        </div>
+                        <div class="slider-track-wrapper">
+                            <input type="range" id="sl-usd" min="0" max="100" value="35" oninput="adjustInvestmentSliders('usd')">
+                        </div>
                     </div>
-                    <div id="invest-report">Расчет данных...</div>
-                </div>
-            </div>
 
-            <div class="card">
-                <h2>5. Алгоритм действий в Pay-Day</h2>
-                <div class="checkbox-tile"
-                    style="background: none; border: none; padding: 2px 0; min-height: auto; margin-bottom: 4px;">
-                    <input type="checkbox">
-                    <div style="font-size: 0.8rem;">Оставить на карте расчетную сумму под кредиты.</div>
+                    <div class="slider-control-group">
+                        <div class="slider-meta">
+                            <span class="slider-name">Crypto Spot (Довгостроковий портфель):</span>
+                            <span class="slider-percentage" id="txt-sl-crypto" style="color: var(--accent-pink);">15%</span>
+                        </div>
+                        <div class="slider-track-wrapper">
+                            <input type="range" id="sl-crypto" min="0" max="100" value="15" oninput="adjustInvestmentSliders('crypto')">
+                        </div>
+                    </div>
+
+                    <div class="instruction-box">
+                        <div class="instruction-header">
+                            <h4>Інструкція для закупівлі</h4>
+                            <button class="btn-copy" onclick="copyInvestmentReport()">Скопіювати</button>
+                        </div>
+                        <div class="instruction-body" id="invest-report-content">
+                            Розрахунок інвестицій...
+                        </div>
+                    </div>
                 </div>
-                <div class="checkbox-tile"
-                    style="background: none; border: none; padding: 2px 0; min-height: auto; margin-bottom: 4px;">
-                    <input type="checkbox">
-                    <div style="font-size: 0.8rem;">Излишки раскидать по трем целевым банкам.</div>
+
+                <!-- 6. Pay-Day Action Plan Checklist -->
+                <div class="card">
+                    <div class="card-title">
+                        5. Алгоритм дій у Pay-Day
+                    </div>
+                    <div class="payday-check-list">
+                        <div class="payday-tile" onclick="togglePaydayItem(this)">
+                            <div class="payday-control"></div>
+                            <span class="payday-label">Залишити на картці суму 13,752.33 ₴ для покриття лімітів та бази.</span>
+                        </div>
+                        <div class="payday-tile" onclick="togglePaydayItem(this)">
+                            <div class="payday-control"></div>
+                            <span class="payday-label">Розподілити надлишки зачислення по цільових банках (Капітал, Техніка, Steam).</span>
+                        </div>
+                        <div class="payday-tile" onclick="togglePaydayItem(this)">
+                            <div class="payday-control"></div>
+                            <span class="payday-label">Провести викуп ОВДП у додатку згідно розрахунку інструкцій.</span>
+                        </div>
+                        <div class="payday-tile" onclick="togglePaydayItem(this)">
+                            <div class="payday-control"></div>
+                            <span class="payday-label">Здійснити конвертацію USD за поточним картковим курсом.</span>
+                        </div>
+                        <div class="payday-tile" onclick="togglePaydayItem(this)">
+                            <div class="payday-control"></div>
+                            <span class="payday-label">Переказати частку на спотовий крипторахунок (BTC/ETH).</span>
+                        </div>
+                    </div>
                 </div>
-                <div class="checkbox-tile"
-                    style="background: none; border: none; padding: 2px 0; min-height: auto; margin-bottom: 4px;">
-                    <input type="checkbox">
-                    <div style="font-size: 0.8rem;">Выполнить ордер на покупку ОВГЗ и USD.</div>
-                </div>
+
             </div>
         </div>
     </div>
 
+    <!-- Client Application Logic -->
     <script>
+        // Core Starting States (Config)
+        const STARTING_BALANCES = {
+            podushka: 50000.00,
+            capital: 23798.00,
+            tech: 5000.00,
+            steam: 5000.00,
+            card: 13709.53
+        };
+
+        const FIXED_LIABILITIES = 11102.33; // Кібернетики + ФОП
+        const BASE_ALLOWANCE = 2650.00;
+        const TARGET_CARD_RESERVE = FIXED_LIABILITIES + BASE_ALLOWANCE; // 13752.33
+
+        // Global Rate Variables
+        let usdExchangeRate = 44.8310;
+        let usdExchangeStatus = 'Static Fallback';
+
+        // Mutable Simulation States
+        let currentIncome = 26500;
+        let selectedPreset = '26500'; // '26500', '36500', 'custom'
         let bonusActive = false;
+        
+        let expenses = {
+            shoes: false,
+            gamepad: false,
+            bag: false
+        };
 
-        function applyPreset(val) {
-            document.getElementById('main-income').value = val;
-            document.getElementById('p-26500').classList.toggle('active', val === 26500);
-            document.getElementById('p-36500').classList.toggle('active', val === 36500);
-            processFinance();
-        }
+        let allocations = {
+            ovgz: 50,
+            usd: 35,
+            crypto: 15
+        };
 
-        function toggleBonus() {
-            bonusActive = !bonusActive;
-            document.getElementById('p-bonus').classList.toggle('active', bonusActive);
-            processFinance();
-        }
+        // Chart.js Instance
+        let assetChart = null;
 
-        function rebalanceSliders(changed) {
-            let ovgz = document.getElementById('sl-ovgz');
-            let usd = document.getElementById('sl-usd');
-            let crypto = document.getElementById('sl-crypto');
+        // On Load Initializations
+        window.addEventListener('DOMContentLoaded', () => {
+            loadSavedState();
+            fetchUSDExchangeRate();
+            updateUI();
+        });
 
-            let v_ovgz = parseInt(ovgz.value);
-            let v_usd = parseInt(usd.value);
-            let v_crypto = parseInt(crypto.value);
+        // 1. Live Exchange Rate Fetching
+        async function fetchUSDExchangeRate() {
+            const statusDot = document.getElementById('rate-status-dot');
+            const statusText = document.getElementById('rate-status-text');
 
-            let total = v_ovgz + v_usd + v_crypto;
-
-            if (total !== 100) {
-                let remainder = 100 - total;
-                if (changed === 'ovgz') {
-                    usd.value = Math.max(0, v_usd + remainder);
-                } else if (changed === 'usd') {
-                    crypto.value = Math.max(0, v_crypto + remainder);
+            try {
+                // Fetching from NBU API (usually CORS-enabled)
+                const response = await fetch('https://bank.gov.ua/NBUStatService/v1/statdirectory/exchange?valcode=USD&json');
+                if (!response.ok) throw new Error('API request failed');
+                
+                const data = await response.json();
+                if (data && data[0] && data[0].rate) {
+                    usdExchangeRate = parseFloat(data[0].rate);
+                    usdExchangeStatus = 'Live NBU';
+                    
+                    statusDot.style.backgroundColor = 'var(--success)';
+                    statusDot.style.boxShadow = '0 0 8px var(--success)';
+                    statusText.textContent = `Курс USD: ${usdExchangeRate.toFixed(4)} ₴ (NBU Live)`;
                 } else {
-                    ovgz.value = Math.max(0, v_ovgz + remainder);
+                    throw new Error('NBU data format invalid');
+                }
+            } catch (err) {
+                console.warn('API error (CORS/Network) - falling back to default:', err);
+                usdExchangeRate = 44.8310;
+                usdExchangeStatus = 'Static Fallback';
+                
+                statusDot.style.backgroundColor = 'var(--warning)';
+                statusDot.style.boxShadow = '0 0 8px var(--warning)';
+                statusText.textContent = `Курс USD: ${usdExchangeRate.toFixed(4)} ₴ (Static)`;
+            }
+            
+            // Recalculate everything once rate resolves
+            updateUI();
+        }
+
+        // 2. Preset Selection
+        function applyIncomePreset(val) {
+            selectedPreset = String(val);
+            currentIncome = val;
+            
+            // Update input display
+            document.getElementById('input-manual-income').value = val;
+            
+            // Re-render
+            updateUI();
+            saveStateToStorage();
+        }
+
+        // 3. Bonus Toggle
+        function toggleBonusOverride() {
+            bonusActive = !bonusActive;
+            
+            updateUI();
+            saveStateToStorage();
+        }
+
+        // 4. Custom Manual Income Change
+        function handleManualIncomeChange(val) {
+            const num = parseFloat(val);
+            if (isNaN(num) || num < 0) {
+                currentIncome = 0;
+            } else {
+                currentIncome = num;
+            }
+            
+            selectedPreset = 'custom';
+            updateUI();
+            saveStateToStorage();
+        }
+
+        // 5. Simulated Expenses Toggling
+        function toggleExpenseCheckbox(type) {
+            // Check if card free cash goes negative and locked
+            const finalBalances = computeBalances();
+            const freeCash = finalBalances.cardFreeCash;
+
+            // If we have a deficit, we prevent checking any UNCHECKED boxes
+            if (freeCash < 0 && !expenses[type]) {
+                return; // Interaction locked
+            }
+
+            expenses[type] = !expenses[type];
+            updateUI();
+            saveStateToStorage();
+        }
+
+        // 6. Pay-Day Steps Checkbox Visual Only
+        function togglePaydayItem(el) {
+            el.classList.toggle('checked');
+            
+            // Keep status in localStorage
+            const items = document.querySelectorAll('.payday-tile');
+            const stateArr = Array.from(items).map(item => item.classList.contains('checked'));
+            localStorage.setItem('payday_steps_completed', JSON.stringify(stateArr));
+        }
+
+        // 7. Interdependent Sliders Rebalancing Engine (locks sum to exactly 100%)
+        function adjustInvestmentSliders(changedSlider) {
+            let slOvgz = document.getElementById('sl-ovgz');
+            let slUsd = document.getElementById('sl-usd');
+            let slCrypto = document.getElementById('sl-crypto');
+
+            let vOvgz = parseInt(slOvgz.value) || 0;
+            let vUsd = parseInt(slUsd.value) || 0;
+            let vCrypto = parseInt(slCrypto.value) || 0;
+
+            let total = vOvgz + vUsd + vCrypto;
+            
+            if (total !== 100) {
+                let diff = 100 - total;
+                if (changedSlider === 'ovgz') {
+                    let otherSum = vUsd + vCrypto;
+                    if (otherSum > 0) {
+                        let usdNew = Math.max(0, Math.min(100, Math.round(vUsd + diff * (vUsd / otherSum))));
+                        let cryptoNew = 100 - vOvgz - usdNew;
+                        if (cryptoNew < 0) {
+                            usdNew += cryptoNew;
+                            cryptoNew = 0;
+                        }
+                        vUsd = usdNew;
+                        vCrypto = cryptoNew;
+                    } else {
+                        // If both other sliders are 0, split remaining 50/50
+                        vUsd = Math.floor(diff / 2);
+                        vCrypto = diff - vUsd;
+                    }
+                } else if (changedSlider === 'usd') {
+                    let otherSum = vOvgz + vCrypto;
+                    if (otherSum > 0) {
+                        let ovgzNew = Math.max(0, Math.min(100, Math.round(vOvgz + diff * (vOvgz / otherSum))));
+                        let cryptoNew = 100 - vUsd - ovgzNew;
+                        if (cryptoNew < 0) {
+                            ovgzNew += cryptoNew;
+                            cryptoNew = 0;
+                        }
+                        vOvgz = ovgzNew;
+                        vCrypto = cryptoNew;
+                    } else {
+                        vOvgz = Math.floor(diff / 2);
+                        vCrypto = diff - vOvgz;
+                    }
+                } else if (changedSlider === 'crypto') {
+                    let otherSum = vOvgz + vUsd;
+                    if (otherSum > 0) {
+                        let ovgzNew = Math.max(0, Math.min(100, Math.round(vOvgz + diff * (vOvgz / otherSum))));
+                        let usdNew = 100 - vCrypto - ovgzNew;
+                        if (usdNew < 0) {
+                            ovgzNew += usdNew;
+                            usdNew = 0;
+                        }
+                        vOvgz = ovgzNew;
+                        vUsd = usdNew;
+                    } else {
+                        vOvgz = Math.floor(diff / 2);
+                        vUsd = diff - vOvgz;
+                    }
                 }
             }
 
-            document.getElementById('p-ovgz-txt').innerText = ovgz.value + '%';
-            document.getElementById('p-usd-txt').innerText = usd.value + '%';
-            document.getElementById('p-crypto-txt').innerText = crypto.value + '%';
+            // Write values back
+            slOvgz.value = vOvgz;
+            slUsd.value = vUsd;
+            slCrypto.value = vCrypto;
 
-            calculateAssets();
+            allocations.ovgz = vOvgz;
+            allocations.usd = vUsd;
+            allocations.crypto = vCrypto;
+
+            // Recalculate instruction panel and percentages labels
+            updateUI();
+            saveStateToStorage();
         }
 
-        function processFinance() {
-            let income = parseFloat(document.getElementById('main-income').value) || 0;
+        // 8. Core Domain Logic Calculator
+        function computeBalances() {
+            // A. Compute Inflow Allocation
+            let inflowCard = 0;
+            let inflowCapital = 0;
+            let inflowTech = 0;
+            let inflowSteam = 0;
 
-            let basePodushka = 50000.00;
-            let baseCapital = 23798.00;
-            let baseTech = 5000.00;
-            let baseGames = 5000.00;
-            let baseCard = 13709.53;
+            if (selectedPreset === '26500') {
+                inflowCard = 13752.00;
+                inflowCapital = 6360.00;
+                inflowTech = 3194.00;
+                inflowSteam = 3194.00;
+            } else if (selectedPreset === '36500') {
+                inflowCard = 13752.00;
+                inflowCapital = 14348.00;
+                inflowTech = 4200.00;
+                inflowSteam = 4200.00;
+            } else {
+                // Manual input allocation logic
+                inflowCard = Math.min(currentIncome, TARGET_CARD_RESERVE);
+                let remainder = Math.max(0, currentIncome - TARGET_CARD_RESERVE);
+                inflowCapital = remainder * 0.50;
+                inflowTech = remainder * 0.25;
+                inflowSteam = remainder * 0.25;
+            }
 
-            let buyShoes = document.getElementById('item-shoes').checked;
-            let buyGamepad = document.getElementById('item-gamepad').checked;
-            let buyBag = document.getElementById('item-bag').checked;
+            // Add +50k Bonus Override
+            if (bonusActive) {
+                inflowCard += 20000.00;
+                inflowCapital += 20000.00;
+                inflowTech += 5000.00;
+                inflowSteam += 5000.00;
+            }
 
-            let outTech = buyShoes ? -3500.00 : 0;
-            let outGames = buyGamepad ? -2700.00 : 0;
-            let outBag = buyBag ? -3000.00 : 0;
+            // B. Simulate Expenses with strict rules
+            let expTech = 0;
+            let expSteam = 0;
+            let expCard = 0;
 
-            let gameRemainder = baseGames + outGames;
-            let bagFromGames = 0;
+            // Shoes -> strictly from Tech
+            if (expenses.shoes) {
+                expTech = 3500.00;
+            }
+
+            // Gamepad -> strictly from Steam
+            if (expenses.gamepad) {
+                expSteam = 2700.00;
+            }
+
+            // Bag -> cascading. First exhaust Steam bank down to 0, then the rest goes to debit card
+            let steamBalanceBeforeBag = (STARTING_BALANCES.steam + inflowSteam) - expSteam;
+            let bagFromSteam = 0;
             let bagFromCard = 0;
 
-            if (outBag !== 0) {
-                if (gameRemainder >= 3000) {
-                    bagFromGames = -3000;
+            if (expenses.bag) {
+                if (steamBalanceBeforeBag >= 3000.00) {
+                    bagFromSteam = 3000.00;
                 } else {
-                    bagFromGames = -gameRemainder;
-                    bagFromCard = -(3000 - gameRemainder);
+                    bagFromSteam = Math.max(0, steamBalanceBeforeBag);
+                    bagFromCard = 3000.00 - bagFromSteam;
                 }
             }
 
-            let totalOutTech = outTech;
-            let totalOutGames = outGames + bagFromGames;
-            let totalOutCard = bagFromCard;
+            // C. Final Balances
+            const finalPodushka = STARTING_BALANCES.podushka;
+            const finalCapital = STARTING_BALANCES.capital + inflowCapital;
+            const finalTech = (STARTING_BALANCES.tech + inflowTech) - expTech;
+            const finalSteam = steamBalanceBeforeBag - bagFromSteam;
+            const finalCard = (STARTING_BALANCES.card + inflowCard) - bagFromCard;
 
-            document.getElementById('out-tech').innerText = totalOutTech.toFixed(2) + " ₴";
-            document.getElementById('out-games').innerText = totalOutGames.toFixed(2) + " ₴";
-            document.getElementById('out-card').innerText = totalOutCard.toFixed(2) + " ₴";
+            // D. Card Free Cash Formula
+            // Final Card Balance - (11,102.33 + 2,650.00)
+            const cardFreeCash = finalCard - TARGET_CARD_RESERVE;
 
-            let flowCard = 0;
-            let flowCapital = 0;
-            let flowTech = 0;
-            let flowGames = 0;
+            return {
+                inflows: {
+                    podushka: 0,
+                    capital: inflowCapital,
+                    tech: inflowTech,
+                    steam: inflowSteam,
+                    card: inflowCard
+                },
+                outflows: {
+                    podushka: 0,
+                    capital: 0,
+                    tech: expTech,
+                    steam: expSteam + bagFromSteam,
+                    card: bagFromCard
+                },
+                finals: {
+                    podushka: finalPodushka,
+                    capital: finalCapital,
+                    tech: finalTech,
+                    steam: finalSteam,
+                    card: finalCard
+                },
+                cardFreeCash
+            };
+        }
 
-            if (income === 26500) {
-                flowCard = 13752.00;
-                flowCapital = 6360.00;
-                flowTech = 3194.00;
-                flowGames = 3194.00;
-            } else if (income === 36500) {
-                flowCard = 13752.00;
-                flowCapital = 14348.00;
-                flowTech = 4200.00;
-                flowGames = 4200.00;
+        // 9. UI Syncer and Re-renderer
+        function updateUI() {
+            const data = computeBalances();
+
+            // A. Update Allocation Engine Preset Buttons
+            const btn26500 = document.getElementById('btn-preset-26500');
+            const btn36500 = document.getElementById('btn-preset-36500');
+            const btnBonus = document.getElementById('btn-bonus-toggle');
+
+            btn26500.classList.toggle('active', selectedPreset === '26500');
+            btn36500.classList.toggle('active', selectedPreset === '36500');
+            btnBonus.classList.toggle('active', bonusActive);
+
+            // B. Render Alerts
+            const alertBox = document.getElementById('deficit-alert');
+            const freeCashContainer = document.getElementById('footer-free-cash-container');
+            const freeCashValue = document.getElementById('ledger-free-cash-val');
+            
+            // Format Free Cash
+            const formattedFreeCash = data.cardFreeCash.toLocaleString('uk-UA', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' ₴';
+
+            if (data.cardFreeCash < 0) {
+                alertBox.style.display = 'flex';
+                freeCashValue.textContent = formattedFreeCash;
+                freeCashContainer.style.color = 'var(--danger)';
+                document.getElementById('ledger-fin-card').style.color = 'var(--danger)';
             } else {
-                flowCard = 13752.00;
-                let dynamicRemainder = income - flowCard;
-                if (dynamicRemainder < 0) {
-                    flowCard = income;
-                    dynamicRemainder = 0;
+                alertBox.style.display = 'none';
+                freeCashValue.textContent = formattedFreeCash;
+                freeCashContainer.style.color = 'var(--success)';
+                document.getElementById('ledger-fin-card').style.color = 'var(--success)';
+            }
+
+            // Lock or unlock simulated purchase checkboxes based on deficit
+            updateInteractionLocks(data.cardFreeCash < 0);
+
+            // C. Update Ledger Table Fields
+            // Inflows
+            document.getElementById('ledger-in-podushka').textContent = `+${data.inflows.podushka.toFixed(2)} ₴`;
+            document.getElementById('ledger-in-capital').textContent = `+${data.inflows.capital.toLocaleString('uk-UA', { minimumFractionDigits: 2 })} ₴`;
+            document.getElementById('ledger-in-tech').textContent = `+${data.inflows.tech.toLocaleString('uk-UA', { minimumFractionDigits: 2 })} ₴`;
+            document.getElementById('ledger-in-steam').textContent = `+${data.inflows.steam.toLocaleString('uk-UA', { minimumFractionDigits: 2 })} ₴`;
+            document.getElementById('ledger-in-card').textContent = `+${data.inflows.card.toLocaleString('uk-UA', { minimumFractionDigits: 2 })} ₴`;
+
+            // Outflows
+            document.getElementById('ledger-out-podushka').textContent = `${data.outflows.podushka.toFixed(2)} ₴`;
+            document.getElementById('ledger-out-capital').textContent = `${data.outflows.capital.toFixed(2)} ₴`;
+            document.getElementById('ledger-out-tech').textContent = `${data.outflows.tech > 0 ? '-' : ''}${data.outflows.tech.toLocaleString('uk-UA', { minimumFractionDigits: 2 })} ₴`;
+            document.getElementById('ledger-out-steam').textContent = `${data.outflows.steam > 0 ? '-' : ''}${data.outflows.steam.toLocaleString('uk-UA', { minimumFractionDigits: 2 })} ₴`;
+            document.getElementById('ledger-out-card').textContent = `${data.outflows.card > 0 ? '-' : ''}${data.outflows.card.toLocaleString('uk-UA', { minimumFractionDigits: 2 })} ₴`;
+
+            // Final Balances
+            document.getElementById('ledger-fin-podushka').textContent = `${data.finals.podushka.toLocaleString('uk-UA', { minimumFractionDigits: 2 })} ₴`;
+            document.getElementById('ledger-fin-capital').textContent = `${data.finals.capital.toLocaleString('uk-UA', { minimumFractionDigits: 2 })} ₴`;
+            document.getElementById('ledger-fin-tech').textContent = `${data.finals.tech.toLocaleString('uk-UA', { minimumFractionDigits: 2 })} ₴`;
+            document.getElementById('ledger-fin-steam').textContent = `${data.finals.steam.toLocaleString('uk-UA', { minimumFractionDigits: 2 })} ₴`;
+            document.getElementById('ledger-fin-card').textContent = `${data.finals.card.toLocaleString('uk-UA', { minimumFractionDigits: 2 })} ₴`;
+
+            // D. Sync Checkbox Tiles Visually
+            const tileShoes = document.getElementById('tile-shoes');
+            const tileGamepad = document.getElementById('tile-gamepad');
+            const tileBag = document.getElementById('tile-bag');
+
+            tileShoes.classList.toggle('checked', expenses.shoes);
+            tileGamepad.classList.toggle('checked', expenses.gamepad);
+            tileBag.classList.toggle('checked', expenses.bag);
+
+            // E. Sliders Percentages Labels
+            document.getElementById('txt-sl-ovgz').textContent = `${allocations.ovgz}%`;
+            document.getElementById('txt-sl-usd').textContent = `${allocations.usd}%`;
+            document.getElementById('txt-sl-crypto').textContent = `${allocations.crypto}%`;
+
+            // F. Calculate & Render Capital Investment Split Report
+            const totalCapital = data.finals.capital;
+            const targetOvgzUah = totalCapital * (allocations.ovgz / 100);
+            const targetUsdUah = totalCapital * (allocations.usd / 100);
+            const targetCryptoUah = totalCapital * (allocations.crypto / 100);
+
+            const OVGZ_UNIT_PRICE = 1061.72;
+            const ovgzUnits = Math.floor(targetOvgzUah / OVGZ_UNIT_PRICE);
+            const ovgzRemainder = targetOvgzUah - (ovgzUnits * OVGZ_UNIT_PRICE);
+            const usdUnits = targetUsdUah / usdExchangeRate;
+
+            // Strict formatted output string requested
+            const reportStr = `Buy ${ovgzUnits} units of OVGZ at 1,061.72 ₴ (rem: ${ovgzRemainder.toFixed(2)} ₴) | Buy $${usdUnits.toFixed(2)} USD on debit card | Allocate ${targetCryptoUah.toFixed(2)} ₴ to crypto spot market.`;
+            document.getElementById('invest-report-content').textContent = reportStr;
+
+            // G. Update Donut Chart
+            updateAssetChart(data.finals);
+        }
+
+        // 10. Update Checkbox Disabled Statuses
+        function updateInteractionLocks(hasDeficit) {
+            const tileShoes = document.getElementById('tile-shoes');
+            const tileGamepad = document.getElementById('tile-gamepad');
+            const tileBag = document.getElementById('tile-bag');
+
+            if (hasDeficit) {
+                if (!expenses.shoes) tileShoes.classList.add('disabled');
+                if (!expenses.gamepad) tileGamepad.classList.add('disabled');
+                if (!expenses.bag) tileBag.classList.add('disabled');
+            } else {
+                tileShoes.classList.remove('disabled');
+                tileGamepad.classList.remove('disabled');
+                tileBag.classList.remove('disabled');
+            }
+        }
+
+        // 11. Chart.js Engine
+        function updateAssetChart(finals) {
+            const dataValues = [
+                finals.podushka,
+                finals.capital,
+                finals.tech,
+                finals.steam,
+                finals.card
+            ];
+
+            if (assetChart) {
+                assetChart.data.datasets[0].data = dataValues;
+                assetChart.update();
+            } else {
+                const ctx = document.getElementById('assetChart').getContext('2d');
+                assetChart = new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: [
+                            'Подушка (НЗ)',
+                            'Капітал',
+                            'Техніка',
+                            'Steam / Досуг',
+                            'Чорна Карта'
+                        ],
+                        datasets: [{
+                            data: dataValues,
+                            backgroundColor: [
+                                '#10b981', // Success (Emergency Base)
+                                '#3b82f6', // Electric Blue (Capital)
+                                '#ff4b82', // Neon Pink (Tech)
+                                '#a855f7', // Steam Purple
+                                '#f1f5f9'  // Slate Silver (Card)
+                            ],
+                            borderColor: '#131c2e',
+                            borderWidth: 2,
+                            hoverOffset: 12
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        cutout: '70%',
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                                labels: {
+                                    color: '#f1f5f9',
+                                    font: {
+                                        family: 'Plus Jakarta Sans',
+                                        size: 11,
+                                        weight: '500'
+                                    },
+                                    padding: 10
+                                }
+                            },
+                            tooltip: {
+                                backgroundColor: '#090d16',
+                                titleFont: { family: 'Plus Jakarta Sans', weight: '700' },
+                                bodyFont: { family: 'Plus Jakarta Sans' },
+                                callbacks: {
+                                    label: function(context) {
+                                        const val = context.raw;
+                                        return ` ${context.label}: ${val.toLocaleString('uk-UA', { minimumFractionDigits: 2 })} ₴`;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+        }
+
+        // 12. Clipboard Util
+        function copyInvestmentReport() {
+            const txt = document.getElementById('invest-report-content').textContent;
+            navigator.clipboard.writeText(txt).then(() => {
+                const copyBtn = document.querySelector('.btn-copy');
+                const originalText = copyBtn.textContent;
+                copyBtn.textContent = 'Скопійовано!';
+                setTimeout(() => {
+                    copyBtn.textContent = originalText;
+                }, 1500);
+            }).catch(err => {
+                console.error('Copy failed: ', err);
+            });
+        }
+
+        // 13. LocalStorage Persistence
+        function saveStateToStorage() {
+            const appState = {
+                currentIncome,
+                selectedPreset,
+                bonusActive,
+                expenses,
+                allocations
+            };
+            localStorage.setItem('mono_finances_core_state', JSON.stringify(appState));
+        }
+
+        function loadSavedState() {
+            const saved = localStorage.getItem('mono_finances_core_state');
+            if (saved) {
+                try {
+                    const parsed = JSON.parse(saved);
+                    currentIncome = parsed.currentIncome;
+                    selectedPreset = parsed.selectedPreset;
+                    bonusActive = parsed.bonusActive;
+                    expenses = parsed.expenses;
+                    allocations = parsed.allocations;
+
+                    // Sync HTML elements
+                    document.getElementById('input-manual-income').value = selectedPreset === 'custom' ? currentIncome : '';
+                    
+                    document.getElementById('sl-ovgz').value = allocations.ovgz;
+                    document.getElementById('sl-usd').value = allocations.usd;
+                    document.getElementById('sl-crypto').value = allocations.crypto;
+
+                } catch (e) {
+                    console.error('Error parsing state from localStorage:', e);
                 }
-                flowCapital = dynamicRemainder * 0.5;
-                flowTech = dynamicRemainder * 0.25;
-                flowGames = dynamicRemainder * 0.25;
             }
 
-            if (bonusActive) {
-                flowCard += 20000.00;
-                flowCapital += 20000.00;
-                flowTech += 5000.00;
-                flowGames += 5000.00;
+            // Load visual-only payday checklist states
+            const paydaySaved = localStorage.getItem('payday_steps_completed');
+            if (paydaySaved) {
+                try {
+                    const parsedPayday = JSON.parse(paydaySaved);
+                    const items = document.querySelectorAll('.payday-tile');
+                    items.forEach((item, idx) => {
+                        if (parsedPayday[idx]) {
+                            item.classList.add('checked');
+                        }
+                    });
+                } catch (e) {
+                    console.error('Error loading payday checklist state:', e);
+                }
             }
-
-            document.getElementById('flow-capital').innerText = "+" + flowCapital.toFixed(2) + " ₴";
-            document.getElementById('flow-tech').innerText = "+" + flowTech.toFixed(2) + " ₴";
-            document.getElementById('flow-games').innerText = "+" + flowGames.toFixed(2) + " ₴";
-            document.getElementById('flow-card').innerText = "+" + flowCard.toFixed(2) + " ₴";
-
-            let finalPodushka = basePodushka;
-            let finalCapital = baseCapital + flowCapital;
-            let finalTech = baseTech + totalOutTech + flowTech;
-            let finalGames = baseGames + totalOutGames + flowGames;
-            let finalCard = baseCard + totalOutCard + flowCard;
-
-            document.getElementById('res-podushka').innerText = finalPodushka.toFixed(2) + " ₴";
-            document.getElementById('res-capital').innerText = finalCapital.toFixed(2) + " ₴";
-            document.getElementById('res-tech').innerText = finalTech.toFixed(2) + " ₴";
-            document.getElementById('res-games').innerText = finalGames.toFixed(2) + " ₴";
-            document.getElementById('res-card').innerText = finalCard.toFixed(2) + " ₴";
-
-            let creditObligation = 11102.33;
-            let personalBase = 2650.00;
-            let neededCash = creditObligation + personalBase;
-
-            let usableCardBalance = finalCard;
-            if (bonusActive) {
-                document.getElementById('label-reserve').innerHTML = `Кредиты: 11 102 ₴ | База: 2650 ₴ | <span style="color:var(--success); font-weight:bold;">Досрочно: 20к ₴</span>`;
-                usableCardBalance -= 20000.00;
-            } else {
-                document.getElementById('label-reserve').innerText = `Кредиты: 11 102.33 ₴ | База: 2 650.00 ₴`;
-            }
-
-            let freeCash = usableCardBalance - neededCash;
-
-            if (freeCash < 0) {
-                document.getElementById('res-card').style.color = 'var(--danger)';
-                document.getElementById('label-free').style.color = 'var(--danger)';
-                document.getElementById('label-free').innerText = `Дефицит: ${freeCash.toFixed(2)} ₴`;
-                document.getElementById('err-log').style.display = 'block';
-                document.getElementById('err-log').innerText = `ВНИМАНИЕ: Баланс карты ниже критического уровня удержаний! Отключите лишние покупки.`;
-            } else {
-                document.getElementById('res-card').style.color = 'var(--success)';
-                document.getElementById('label-free').style.color = 'var(--success)';
-                document.getElementById('label-free').innerText = `Свободно: ${freeCash.toFixed(2)} ₴`;
-                document.getElementById('err-log').style.display = 'none';
-            }
-
-            calculateAssets();
         }
 
-        function calculateAssets() {
-            let capValText = document.getElementById('res-capital').innerText;
-            let totalCapital = parseFloat(capValText.replace(/[^0-9.-]+/g, "")) || 0;
-
-            let pctOvgz = parseInt(document.getElementById('sl-ovgz').value);
-            let pctUsd = parseInt(document.getElementById('sl-usd').value);
-            let pctCrypto = parseInt(document.getElementById('sl-crypto').value);
-
-            let targetOvgzGrivna = totalCapital * (pctOvgz / 100);
-            let targetUsdGrivna = totalCapital * (pctUsd / 100);
-            let targetCryptoGrivna = totalCapital * (pctCrypto / 100);
-
-            let priceOvgzUnit = 1061.72;
-            let countOvgzUnits = Math.floor(targetOvgzGrivna / priceOvgzUnit);
-            let realSpentOvgz = countOvgzUnits * priceOvgzUnit;
-
-            let exchangeRateUsd = 44.8310;
-            let totalPurchasedUsd = targetUsdGrivna / exchangeRateUsd;
-
-            document.getElementById('invest-report').innerHTML = `
-            • <b>ОВГЗ:</b> ${targetOvgzGrivna.toFixed(0)} ₴ → Купить: <b>${countOvgzUnits} шт.</b> (ост. ${(targetOvgzGrivna - realSpentOvgz).toFixed(0)} ₴)<br>
-            • <b>USD:</b> ${targetUsdGrivna.toFixed(0)} ₴ → Покупка в Моно: <b>$${totalPurchasedUsd.toFixed(2)}</b><br>
-            • <b>Крипта:</b> На спот <b>${targetCryptoGrivna.toFixed(0)} ₴</b> (~$${(targetCryptoGrivna / exchangeRateUsd).toFixed(0)})
-        `;
+        // 14. Service Worker Registration
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js')
+                    .then(reg => console.log('ServiceWorker registration successful: ', reg.scope))
+                    .catch(err => console.log('ServiceWorker registration failed: ', err));
+            });
         }
-
-        window.onload = function () {
-            processFinance();
-        };
     </script>
 </body>
 
 </html>
+
+<!--
+  TEMPLATE FOR PWA manifest.json (Android Home Screen Installer)
+  Save the following JSON content as "manifest.json" in the same directory:
+
+  {
+    "short_name": "Mono-Finances",
+    "name": "Mono-Finances: Mobile Command Center",
+    "icons": [
+      {
+        "src": "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=192&h=192&fit=crop&q=80",
+        "type": "image/png",
+        "sizes": "192x192"
+      },
+      {
+        "src": "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=512&h=512&fit=crop&q=80",
+        "type": "image/png",
+        "sizes": "512x512"
+      }
+    ],
+    "start_url": "./Tracker.html",
+    "background_color": "#0b0f19",
+    "theme_color": "#0b0f19",
+    "display": "standalone",
+    "orientation": "portrait"
+  }
+-->
