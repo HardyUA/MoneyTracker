@@ -419,6 +419,40 @@
             color: var(--accent-pink);
         }
 
+        .checkbox-cost-wrapper {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 4px 8px;
+            max-width: 100px;
+            transition: border-color 0.2s;
+        }
+        .checkbox-cost-wrapper:focus-within {
+            border-color: var(--accent-pink);
+        }
+        .expense-cost-input {
+            width: 100%;
+            background: transparent;
+            border: none;
+            color: var(--accent-pink);
+            font-size: 0.95rem;
+            font-weight: 800;
+            text-align: right;
+            outline: none;
+            padding-right: 12px;
+        }
+        .cost-currency-symbol {
+            position: absolute;
+            right: 8px;
+            font-weight: 800;
+            color: var(--accent-pink);
+            font-size: 0.95rem;
+            pointer-events: none;
+        }
+
         /* Pulsing Deficit Alert Box */
         .alert-box {
             background: rgba(239, 68, 68, 0.1);
@@ -625,10 +659,20 @@
 
         input[type="range"]::-webkit-slider-runnable-track {
             width: 100%;
-            height: 6px;
+            height: 8px;
             cursor: pointer;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 3px;
+            background: #27354f;
+            border-radius: 4px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        input[type="range"]::-moz-range-track {
+            width: 100%;
+            height: 8px;
+            cursor: pointer;
+            background: #27354f;
+            border-radius: 4px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
         }
 
         input[type="range"]::-webkit-slider-thumb {
@@ -637,12 +681,23 @@
             border-radius: 50%;
             cursor: pointer;
             -webkit-appearance: none;
-            margin-top: -7px;
+            margin-top: -6px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
             transition: transform 0.1s, background-color 0.2s;
         }
 
-        input[type="range"]::-webkit-slider-thumb:hover {
+        input[type="range"]::-moz-range-thumb {
+            height: 20px;
+            width: 20px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            transition: transform 0.1s, background-color 0.2s;
+        }
+
+        input[type="range"]::-webkit-slider-thumb:hover,
+        input[type="range"]::-moz-range-thumb:hover {
             transform: scale(1.25);
         }
 
@@ -651,13 +706,28 @@
             background-color: var(--accent-blue);
             box-shadow: 0 0 12px rgba(59, 130, 246, 0.6);
         }
+        #sl-ovgz::-moz-range-thumb {
+            background-color: var(--accent-blue);
+            box-shadow: 0 0 12px rgba(59, 130, 246, 0.6);
+            border: none;
+        }
         #sl-usd::-webkit-slider-thumb {
             background-color: var(--success);
             box-shadow: 0 0 12px rgba(16, 185, 129, 0.6);
         }
+        #sl-usd::-moz-range-thumb {
+            background-color: var(--success);
+            box-shadow: 0 0 12px rgba(16, 185, 129, 0.6);
+            border: none;
+        }
         #sl-crypto::-webkit-slider-thumb {
             background-color: var(--accent-pink);
             box-shadow: 0 0 12px rgba(255, 75, 130, 0.6);
+        }
+        #sl-crypto::-moz-range-thumb {
+            background-color: var(--accent-pink);
+            box-shadow: 0 0 12px rgba(255, 75, 130, 0.6);
+            border: none;
         }
 
         /* Instruction Output Box */
@@ -772,6 +842,94 @@
         .payday-tile.checked .payday-label {
             color: var(--text-muted);
             text-decoration: line-through;
+        }
+
+        /* Mobile View Optimization (max-width: 480px) */
+        @media (max-width: 480px) {
+            body {
+                padding: 8px;
+            }
+            .card {
+                padding: 16px;
+                border-radius: 16px;
+            }
+            .card-title {
+                font-size: 0.95rem;
+                margin-bottom: 16px;
+            }
+            header {
+                padding-bottom: 12px;
+                margin-bottom: 16px;
+                gap: 8px;
+            }
+            .logo-area h1 {
+                font-size: 1.25rem;
+            }
+            .logo-area p {
+                font-size: 0.75rem;
+            }
+            .header-badges {
+                gap: 6px;
+            }
+            .status-badge {
+                font-size: 0.75rem;
+                padding: 6px 10px;
+            }
+            .btn-grid {
+                grid-template-columns: 1fr;
+                gap: 8px;
+            }
+            button.btn {
+                min-height: 44px;
+                font-size: 0.85rem;
+            }
+            .checkbox-tile {
+                padding: 12px;
+                gap: 10px;
+                border-radius: 12px;
+                min-height: auto;
+            }
+            .checkbox-label {
+                font-size: 0.85rem;
+            }
+            .checkbox-desc {
+                font-size: 0.7rem;
+            }
+            .checkbox-cost-wrapper {
+                max-width: 80px;
+                padding: 2px 6px;
+                height: 32px;
+            }
+            .expense-cost-input {
+                font-size: 0.85rem;
+                padding-right: 8px;
+            }
+            .cost-currency-symbol {
+                font-size: 0.85rem;
+                right: 6px;
+            }
+            th, td {
+                padding: 10px 8px;
+                font-size: 0.8rem;
+            }
+            .ledger-footer-metrics {
+                font-size: 0.8rem;
+                padding: 10px;
+                gap: 8px;
+            }
+            .footer-free-cash {
+                font-size: 0.9rem;
+            }
+            .instruction-box {
+                padding: 12px;
+                margin-top: 14px;
+            }
+            .instruction-body {
+                font-size: 0.75rem;
+            }
+            .chart-container {
+                height: 220px;
+            }
         }
     </style>
 </head>
@@ -957,7 +1115,10 @@
                                 <div class="checkbox-label">New Sneakers</div>
                                 <div class="checkbox-desc">Списання строго з банки "Техніка та здоров'я"</div>
                             </div>
-                            <div class="checkbox-cost">3,500 ₴</div>
+                            <div class="checkbox-cost-wrapper" onclick="event.stopPropagation()">
+                                <input type="number" class="expense-cost-input" id="cost-shoes" value="3500" oninput="handleCostChange('shoes', this.value)">
+                                <span class="cost-currency-symbol">₴</span>
+                            </div>
                         </div>
 
                         <!-- Gamepad -->
@@ -967,7 +1128,10 @@
                                 <div class="checkbox-label">Xbox Series Gamepad</div>
                                 <div class="checkbox-desc">Списання строго з банки "Досуг та ігри (Steam)"</div>
                             </div>
-                            <div class="checkbox-cost">2,700 ₴</div>
+                            <div class="checkbox-cost-wrapper" onclick="event.stopPropagation()">
+                                <input type="number" class="expense-cost-input" id="cost-gamepad" value="2700" oninput="handleCostChange('gamepad', this.value)">
+                                <span class="cost-currency-symbol">₴</span>
+                            </div>
                         </div>
 
                         <!-- Født i stormen Bag -->
@@ -977,7 +1141,10 @@
                                 <div class="checkbox-label">Сумка Født i stormen</div>
                                 <div class="checkbox-desc">Каскадне списання: Steam Банка до 0 ₴ → дефіцит на Чорну Карту</div>
                             </div>
-                            <div class="checkbox-cost">3,000 ₴</div>
+                            <div class="checkbox-cost-wrapper" onclick="event.stopPropagation()">
+                                <input type="number" class="expense-cost-input" id="cost-bag" value="3000" oninput="handleCostChange('bag', this.value)">
+                                <span class="cost-currency-symbol">₴</span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -1092,6 +1259,12 @@
             bag: false
         };
 
+        let expenseCosts = {
+            shoes: 3500.00,
+            gamepad: 2700.00,
+            bag: 3000.00
+        };
+
         let allocations = {
             ovgz: 50,
             usd: 35,
@@ -1190,6 +1363,18 @@
             }
 
             expenses[type] = !expenses[type];
+            updateUI();
+            saveStateToStorage();
+        }
+
+        // 5b. Handle Arbitrary Expense Cost Change
+        function handleCostChange(type, value) {
+            const num = parseFloat(value);
+            if (isNaN(num) || num < 0) {
+                expenseCosts[type] = 0;
+            } else {
+                expenseCosts[type] = num;
+            }
             updateUI();
             saveStateToStorage();
         }
@@ -1323,12 +1508,12 @@
 
             // Shoes -> strictly from Tech
             if (expenses.shoes) {
-                expTech = 3500.00;
+                expTech = expenseCosts.shoes;
             }
 
             // Gamepad -> strictly from Steam
             if (expenses.gamepad) {
-                expSteam = 2700.00;
+                expSteam = expenseCosts.gamepad;
             }
 
             // Bag -> cascading. First exhaust Steam bank down to 0, then the rest goes to debit card
@@ -1337,11 +1522,12 @@
             let bagFromCard = 0;
 
             if (expenses.bag) {
-                if (steamBalanceBeforeBag >= 3000.00) {
-                    bagFromSteam = 3000.00;
+                let bagCost = expenseCosts.bag;
+                if (steamBalanceBeforeBag >= bagCost) {
+                    bagFromSteam = bagCost;
                 } else {
                     bagFromSteam = Math.max(0, steamBalanceBeforeBag);
-                    bagFromCard = 3000.00 - bagFromSteam;
+                    bagFromCard = bagCost - bagFromSteam;
                 }
             }
 
@@ -1585,6 +1771,7 @@
                 selectedPreset,
                 bonusActive,
                 expenses,
+                expenseCosts,
                 allocations
             };
             localStorage.setItem('mono_finances_core_state', JSON.stringify(appState));
@@ -1599,6 +1786,9 @@
                     selectedPreset = parsed.selectedPreset;
                     bonusActive = parsed.bonusActive;
                     expenses = parsed.expenses;
+                    if (parsed.expenseCosts) {
+                        expenseCosts = parsed.expenseCosts;
+                    }
                     allocations = parsed.allocations;
 
                     // Sync HTML elements
@@ -1607,6 +1797,11 @@
                     document.getElementById('sl-ovgz').value = allocations.ovgz;
                     document.getElementById('sl-usd').value = allocations.usd;
                     document.getElementById('sl-crypto').value = allocations.crypto;
+
+                    // Sync cost input values
+                    document.getElementById('cost-shoes').value = expenseCosts.shoes;
+                    document.getElementById('cost-gamepad').value = expenseCosts.gamepad;
+                    document.getElementById('cost-bag').value = expenseCosts.bag;
 
                 } catch (e) {
                     console.error('Error parsing state from localStorage:', e);
@@ -1662,7 +1857,7 @@
         "sizes": "512x512"
       }
     ],
-    "start_url": "./Tracker.html",
+    "start_url": "./index.html",
     "background_color": "#0b0f19",
     "theme_color": "#0b0f19",
     "display": "standalone",

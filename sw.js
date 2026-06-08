@@ -1,6 +1,7 @@
 const CACHE_NAME = 'mono-finances-cache-v1';
 const ASSETS = [
-    './Tracker.html'
+    './',
+    './index.html'
 ];
 
 self.addEventListener('install', e => {
